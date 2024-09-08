@@ -1,0 +1,9 @@
+{
+    "files.associations": {
+        "string.h": "c",
+        "functional": "c",
+        "person.h": "c",
+        "unistd.h": "c",
+        "settings.h": "c"
+    }
+}

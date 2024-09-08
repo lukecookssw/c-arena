@@ -1,0 +1,31 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "build",
+            "type": "shell",
+            "command": "gcc",
+            "args": [
+                "-g",
+                "-o",
+                "main.out",
+                "main.c",
+                
+                // settings
+                "settings/settings.c",
+
+                // libs
+                "lib/arena/arena.c",
+                "lib/person/person.c",
+                "lib/grid/grid.c"
+            ],
+            "problemMatcher": [
+                "$gcc"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+        }
+    ]
+}
