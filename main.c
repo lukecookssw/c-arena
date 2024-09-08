@@ -11,8 +11,6 @@
 
 void print_grid(Grid *grid)
 {
-    // TODO: This doesn't work the way I hoped it would.
-    // It consumes the initial "./main" command as well
     printf("\033[H");   // Move the cursor to the top-left corner
 
     // Print the grid with colors
@@ -92,6 +90,7 @@ void tick(Person *people, Grid *grid, int people_count)
 
 int main()
 {
+    printf("\033[2J"); // Clear the screen
 
     Arena arena;
     size_t arena_size = (NUM_PEOPLE * sizeof(Person)) + sizeof(Grid);
