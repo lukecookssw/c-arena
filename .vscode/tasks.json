@@ -19,6 +19,7 @@
                 // engine
                 "engine/game/game.c",
                 "engine/vbo/vbo.c",
+                "engine/shaders/shaders.c",
                 
                 // libs
                 "lib/arena/arena.c",

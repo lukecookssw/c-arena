@@ -5,6 +5,7 @@
         "person.h": "c",
         "unistd.h": "c",
         "settings.h": "c",
-        "freeglut.h": "c"
+        "freeglut.h": "c",
+        "stdlib.h": "c"
     }
 }
