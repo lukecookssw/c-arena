@@ -6,16 +6,17 @@
 
 #include <GL/glew.h>
 
-void create_vbo(GLfloat *vertices, size_t vertex_count, GLfloat *colours, size_t colour_count, GLuint *vao_id, GLuint *vbo_id, GLuint *colour_buffer_id)
+VBO create_vbo(GLfloat *vertices, size_t vertex_count, GLfloat *colours, size_t colour_count)
 {
     GLenum ErrorCheckValue = glGetError();
-    glGenVertexArrays(1, vao_id);
-    glBindVertexArray(*vao_id);
+    GLuint vao_id, vbo_id, colour_buffer_id;
+    glGenVertexArrays(1, &vao_id);
+    glBindVertexArray(vao_id);
 
-    glGenBuffers(1, vbo_id); // create N buffers on the GPU and store pointers to them in the array
+    glGenBuffers(1, &vbo_id); // create N buffers on the GPU and store pointers to them in the array
 
     // bind the buffer to the context and "activate" the current buffer object as the target
-    glBindBuffer(GL_ARRAY_BUFFER, *vbo_id);
+    glBindBuffer(GL_ARRAY_BUFFER, vbo_id);
 
     // copy the data from the CPU to the GPU
     glBufferData(GL_ARRAY_BUFFER, vertex_count * sizeof(GLfloat), vertices, GL_STATIC_DRAW);
@@ -34,8 +35,8 @@ void create_vbo(GLfloat *vertices, size_t vertex_count, GLfloat *colours, size_t
     // enable the vertex attribute array at the specified index
     glEnableVertexAttribArray(0);
 
-    glGenBuffers(1, colour_buffer_id);
-    glBindBuffer(GL_ARRAY_BUFFER, *colour_buffer_id);
+    glGenBuffers(1, &colour_buffer_id);
+    glBindBuffer(GL_ARRAY_BUFFER, colour_buffer_id);
     glBufferData(GL_ARRAY_BUFFER, colour_count * sizeof(GLfloat), colours, GL_STATIC_DRAW);
     glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, 0, 0);
     glEnableVertexAttribArray(1);
@@ -50,9 +51,12 @@ void create_vbo(GLfloat *vertices, size_t vertex_count, GLfloat *colours, size_t
 
         exit(-1);
     }
+
+    VBO vbo = {vao_id, vbo_id, colour_buffer_id};
+    return vbo;
 }
 
-void destroy_vbo(GLuint vao_id, GLuint vbo_id, GLuint colour_buffer_id)
+void destroy_vbo(VBO vbo)
 {
     GLenum ErrorCheckValue = glGetError();
 
@@ -60,11 +64,11 @@ void destroy_vbo(GLuint vao_id, GLuint vbo_id, GLuint colour_buffer_id)
     glDisableVertexAttribArray(0);
 
     glBindBuffer(GL_ARRAY_BUFFER, 0);
-    glDeleteBuffers(1, &colour_buffer_id);
-    glDeleteBuffers(1, &vbo_id);
+    glDeleteBuffers(1, &vbo.colour_buffer_id);
+    glDeleteBuffers(1, &vbo.vbo_id);
 
     glBindVertexArray(0);
-    glDeleteVertexArrays(1, &vao_id);
+    glDeleteVertexArrays(1, &vbo.vao_id);
 
     ErrorCheckValue = glGetError();
     if (ErrorCheckValue != GL_NO_ERROR)

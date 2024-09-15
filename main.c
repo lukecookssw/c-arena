@@ -53,12 +53,16 @@ void CreateVBO(void)
     size_t vertex_count = sizeof(vertices) / sizeof(vertices[0]);
     size_t colour_count = sizeof(colours) / sizeof(colours[0]);
 
-    create_vbo(vertices, vertex_count, colours, colour_count, &VaoId, &VboId, &ColorBufferId);
+    VBO vbo = create_vbo(vertices, vertex_count, colours, colour_count);
+    VaoId           = vbo.vao_id;
+    VboId           = vbo.vbo_id;
+    ColorBufferId   = vbo.colour_buffer_id;
 }
 
 void DestroyVBO(void)
 {
-    destroy_vbo(VaoId, VboId, ColorBufferId);
+    VBO vbo = {VaoId, VboId, ColorBufferId};
+    destroy_vbo(vbo);
 }
 
 void CreateShaders(void)
