@@ -1,7 +1,5 @@
 
 #include "engine/game/game.h"
-#include "engine/vbo/vbo.h"
-#include "engine/shaders/shaders.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -16,7 +14,41 @@ GLuint VertexShaderId,
     VboId,
     ColorBufferId;
 
+const GLchar *VertexShader =
+    {
+        "#version 400\n"
+
+        "layout(location=0) in vec4 in_Position;\n"
+        "layout(location=1) in vec4 in_Color;\n"
+        "out vec4 ex_Color;\n"
+
+        "void main(void)\n"
+        "{\n"
+        "  gl_Position = in_Position;\n"
+        "  ex_Color = in_Color;\n"
+        "}\n"};
+
+const GLchar *FragmentShader =
+    {
+        "#version 400\n"
+
+        "in vec4 ex_Color;\n"
+        "out vec4 out_Color;\n"
+
+        "void main(void)\n"
+        "{\n"
+        "  out_Color = ex_Color;\n"
+        "}\n"};
+
 // Function prototypes
+void Initialize(int, char *[]);
+void InitWindow(int, char *[]);
+void ResizeFunction(int, int);
+void RenderFunction(void);
+void timer_function(int);
+void idle_function(void);
+
+void Cleanup(void);
 void CreateVBO(void);
 void DestroyVBO(void);
 void CreateShaders(void);
@@ -31,6 +63,120 @@ int main(int argc, char *argv[])
 
     game_end();
     return 0;
+}
+
+
+void InitWindow(int argc, char *argv[])
+{
+    glutInit(&argc, argv);
+
+    glutInitContextVersion(4, 0);
+    glutInitContextFlags(GLUT_FORWARD_COMPATIBLE);
+    glutInitContextProfile(GLUT_CORE_PROFILE);
+
+    glutSetOption(
+        GLUT_ACTION_ON_WINDOW_CLOSE,
+        GLUT_ACTION_GLUTMAINLOOP_RETURNS);
+
+    glutInitWindowSize(CurrentWidth, CurrentHeight);
+
+    glutInitDisplayMode(GLUT_DEPTH | GLUT_DOUBLE | GLUT_RGBA);
+
+    WindowHandle = glutCreateWindow(WINDOW_TITLE_PREFIX);
+
+    if (WindowHandle < 1)
+    {
+        fprintf(
+            stderr,
+            "ERROR: Could not create a new rendering window.\n");
+        exit(EXIT_FAILURE);
+    }
+
+    glutReshapeFunc(ResizeFunction);
+    glutDisplayFunc(RenderFunction);
+    glutIdleFunc(idle_function);
+    glutTimerFunc(0, timer_function, 0);
+    glutCloseFunc(Cleanup);
+}
+
+void Cleanup(void)
+{
+    DestroyShaders();
+    DestroyVBO();
+}
+
+void ResizeFunction(int Width, int Height)
+{
+    CurrentWidth = Width;
+    CurrentHeight = Height;
+    glViewport(0, 0, CurrentWidth, CurrentHeight);
+}
+
+void RenderFunction(void)
+{
+    ++FrameCount;
+    glBeginQuery(GL_TIME_ELAPSED, query);
+
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    glDrawArrays(GL_TRIANGLES, 0, 3);
+
+    glEndQuery(GL_TIME_ELAPSED);
+
+    glutSwapBuffers();
+    glutPostRedisplay();
+}
+
+void idle_function(void)
+{
+    glutPostRedisplay();
+}
+
+void print_ms_per_frame(char *str)
+{
+    // Get query result
+    GLuint64 timeElapsed;
+    glGetQueryObjectui64v(query, GL_QUERY_RESULT, &timeElapsed);
+
+    // Convert nanoseconds to milliseconds
+    double millisecondsPerFrame = timeElapsed / 1000000.0;
+
+    // Milliseconds per frame
+    sprintf(
+        str,
+        "%s: %.2f Milliseconds Per Frame @ %d x %d",
+        WINDOW_TITLE_PREFIX,
+        millisecondsPerFrame,
+        CurrentWidth,
+        CurrentHeight);
+}
+
+void print_fps(char *str)
+{
+    sprintf(
+        str,
+        "%s: %d Frames Per Second @ %d x %d",
+        WINDOW_TITLE_PREFIX,
+        FrameCount * 4,
+        CurrentWidth,
+        CurrentHeight);
+}
+
+void timer_function(int value)
+{
+    if (value != 0)
+    {
+        char *str = (char *)
+            malloc(512 + strlen(WINDOW_TITLE_PREFIX));
+
+        // print_ms_per_frame(str);
+        print_fps(str);
+
+        glutSetWindowTitle(str);
+        free(str);
+    }
+
+    FrameCount = 0;
+    glutTimerFunc(250, timer_function, 1);
 }
 
 

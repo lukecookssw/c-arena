@@ -6,18 +6,31 @@
             "type": "shell",
             "command": "gcc",
             "args": [
-                "-g",
+                
+                "-g", // debug symbols
+                
                 "-o",
                 "main.out",
                 "main.c",
-                
+
                 // settings
                 "settings/settings.c",
 
+                // engine
+                "engine/game/game.c",
+                "engine/vbo/vbo.c",
+                
                 // libs
                 "lib/arena/arena.c",
                 "lib/person/person.c",
-                "lib/grid/grid.c"
+                "lib/grid/grid.c",
+
+                // OpenGL
+                "-lGL",
+                "-lGLU",
+                "-lglfw",
+                "-lGLEW",
+                "-lglut"
             ],
             "problemMatcher": [
                 "$gcc"

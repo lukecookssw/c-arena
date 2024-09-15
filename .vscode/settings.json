@@ -4,6 +4,7 @@
         "functional": "c",
         "person.h": "c",
         "unistd.h": "c",
-        "settings.h": "c"
+        "settings.h": "c",
+        "freeglut.h": "c"
     }
 }
