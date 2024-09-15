@@ -30,6 +30,8 @@ int main(int argc, char *argv[])
     glutMainLoop();
 
     game_end();
+    DestroyVBO();
+    DestroyShaders();
     return 0;
 }
 
